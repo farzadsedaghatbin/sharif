@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="hal:sct:1.0.0" xmlns="hal:sct:1.0.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:simpleType name="BICIdentifier">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]{6,6}[A-Z2-9][A-NP-Z|0-9]([A-Z0-9]{3,3}){0,1}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ActiveCurrencyAndAmount">
+        <xs:simpleContent>
+            <xs:extension base="ActiveCurrencyAndAmount_SimpleType">
+                <xs:attribute name="Ccy" type="ActiveCurrencyCode" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="ActiveCurrencyCode">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]{3,3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ActiveCurrencyAndAmount_SimpleType">
+        <xs:restriction base="xs:decimal">
+            <xs:fractionDigits value="5"/>
+            <xs:totalDigits value="18"/>
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Max35Text">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="35"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="TXRList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="TXR" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="MndtReqId" type="Max35Text"/>
+                            <xs:element name="CBIC" type="BICIdentifier"/>
+                            <xs:element name="DBIC" type="BICIdentifier"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="MaxAmt" type="ActiveCurrencyAndAmount"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

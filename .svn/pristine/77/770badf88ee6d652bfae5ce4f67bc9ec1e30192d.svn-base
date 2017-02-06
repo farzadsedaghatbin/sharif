@@ -1,0 +1,18 @@
+<project name="JAXBGenerator" basedir=".">
+
+    <description>JAXBGenerator</description>
+    <property environment="env"/>
+    <property name="src.dir" value="src/main/java"/>
+    <property name="schema.dir" value="src/main/resources/schema"/>
+
+    <target name="GENERATE_TRX" description="Compile all Java source files">
+        <exec executable="${env.JAVA_HOME}/bin/xjc.exe">
+            <arg value="-d"/>
+            <arg value="${src.dir}"/>
+            <arg value="-p"/>
+            <arg value="com.isc.npsd.sharif.model.entities.schemaobjects.trx"/>
+            <arg value="${schema.dir}/trx.xsd"/>
+        </exec>
+    </target>
+
+</project>

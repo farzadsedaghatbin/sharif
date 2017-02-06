@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/crud-template.xhtml">
+    <ui:define name="content">
+        <f:loadBundle var="conf" basename="configuration"/>
+        <h:form id="form">
+            <p:panelGrid columns="2" id="matchGrid" cellpadding="5" style="margin: 0 auto;">
+                <f:facet name="header">
+                    prepare Files
+                </f:facet>
+
+                <h:outputLabel for="numberOfTx" value="Number Of Transactions : *"/>
+                <h:inputText id="numberOfTx" value="#{txController.numberOfTx}" label="Number Of Transactions"
+                            required="true" requiredMessage="#{bundle.value_is_required}">a
+                    <p:message for="numberOfTx"/>
+                </h:inputText>
+
+                <f:facet name="footer">
+                    <p:commandButton update="matchGrid" value="Prepare Files" action="#{txController.generate()}"/>
+                    <p:commandButton update="matchGrid" value="File Process" action="#{txController.fileProcess()}"/>
+                    <!--<p:commandButton update="matchGrid" value="#{bundle.save}" action="#{txController.saveFiles()}" icon="save"/>-->
+                </f:facet>
+
+            </p:panelGrid>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

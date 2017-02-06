@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Created by IntelliJ IDEA.
+  User: M_Rastgar
+  Date: 2/17/14
+  Time: 2:44 PM
+-->
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<f:view locale="en">
+    <f:loadBundle var="bundle" basename="messages"/>
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet"
+              href="#{request.contextPath}/resources/globals/global.css"></link>
+        <script type="application/javascript"
+                src="#{request.contextPath}/resources/persian-calendar/jquery.ui.datepicker-cc.js"></script>
+        <script type="application/javascript"
+                src="#{request.contextPath}/resources/persian-calendar/calendar.js"></script>
+        <script type="application/javascript"
+                src="#{request.contextPath}/resources/persian-calendar/jquery.ui.datepicker-cc-ar.js"></script>
+        <script type="application/javascript"
+                src="#{request.contextPath}/resources/persian-calendar/jquery.ui.datepicker-cc-fa.js"></script>
+        <script type="text/javascript"
+                src="#{request.contextPath}/resources/globals/global.js"></script>
+
+
+        <link rel="stylesheet"
+              href="#{request.contextPath}/resources/globals/bootstrap.min.css"/>
+        <link rel="stylesheet"
+              href="#{request.contextPath}/resources/globals/bootstrap-theme.min.css"/>
+        <script type="text/javascript"
+                src="#{request.contextPath}/resources/globals/bootstrap.min.js"></script>
+
+        <ui:insert name="head"/>
+
+        <title>#{bundle.applicationName}</title>
+
+        <style type="text/css">
+
+            .ui-widget-header h3 {
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .ui-menubar {
+                /*float: #{bundle.align} !important;*/
+                margin-left: 0px !important;
+            }
+
+            .ui-menu-list {
+                right: 0;
+            }
+
+            .ui-menuitem-text {
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .home {
+                background-image: url("#{resource['images/home.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .alarm {
+                background-image: url("#{resource['images/alarm.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .exit {
+                background-image: url("#{resource['images/exit.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .add {
+                background-image: url("#{resource['images/add.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .edit {
+                background-image: url("#{resource['images/edit.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .delete {
+                background-image: url("#{resource['images/delete.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .save {
+                background-image: url("#{resource['images/save.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .certificate {
+                background-image: url("#{resource['images/certificate.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .search {
+                background-image: url("#{resource['images/search.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .view {
+                background-image: url("#{resource['images/view.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .download {
+                background-image: url("#{resource['images/download.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .outfile {
+                background-image: url("#{resource['images/outfile.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .infile {
+                background-image: url("#{resource['images/infile.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .user {
+                background-image: url("#{resource['images/user.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .participant {
+                background-image: url("#{resource['images/participant.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .workgroup {
+                background-image: url("#{resource['images/workgroup.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .param {
+                background-image: url("#{resource['images/param.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .reset {
+                background-image: url("#{resource['images/reset.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .cycles {
+                background-image: url("#{resource['images/cycles.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .flag {
+                background-image: url("#{resource['images/flag.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .tfmandate {
+                background-image: url("#{resource['images/tf_mandate.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .mandate {
+                background-image: url("#{resource['images/ntf_mandate.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .licence {
+                background-image: url("#{resource['images/licence.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .organization {
+                background-image: url("#{resource['images/organization.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .account {
+                background-image: url("#{resource['images/account.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .transfer {
+                background-image: url("#{resource['images/transfer.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+            .monitoring {
+                background-image: url("#{resource['images/monitoring.png']}") !important;
+                background-size: 16px;
+                /*float: #{bundle.align} !important;*/
+            }
+
+
+        </style>
+
+    </h:head>
+
+    <h:body dir="${bundle.dir}">
+
+
+        <p:ajaxStatus onstart="PF('statusDlg').show()" onsuccess="PF('statusDlg').hide()"/>
+
+        <p:dialog widgetVar="statusDlg" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false">
+            <div style="vertical-align: middle;">
+                <h:outputText value="#{bundle.processing} ... "/>
+                <br/>
+                <p:graphicImage library="images" name="working.gif" width="100%"/>
+            </div>
+        </p:dialog>
+
+        <pe:tooltip global="true" myPosition="bottom center" atPosition="top center"/>
+
+        <div class="wrapper">
+
+            <div class="container" dir="${bundle.dir}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h:graphicImage name="hd.png" library="images" width="100%"/>
+                        <p:growl id="messages" showDetail="true" sticky="false" autoUpdate="true" redisplay="false"
+                                 life="10000" globalOnly="true"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <h:form>
+                            <p:menu dir="rtl" style="width: 100%" toggleable="true">
+                                <p:menuitem url="/member/member.xhtml" value="${bundle.member_management}"/>
+                                <p:menuitem url="/index.xhtml" value="Jboss Application"/>
+                            </p:menu>
+                        </h:form>
+                    </div>
+                    <div class="col-md-10">
+                        <p:confirmDialog global="true" showEffect="puff" hideEffect="explode" closeOnEscape="true">
+                            <p:commandButton value="#{bundle.yes}" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="ui-icon-check"/>
+                            <p:commandButton value="#{bundle.no}" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                        <ui:insert name="content"/>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                #{bundle.copyrights}
+            </div>
+        </div>
+    </h:body>
+</f:view>
+</html>

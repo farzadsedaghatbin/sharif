@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:npsd="http://npsd/perisanDatePicker">
+
+<!-- INTERFACE -->
+<cc:interface>
+    <cc:attribute name="value"/>
+    <cc:attribute name="id"/>
+    <cc:attribute name="styleClass"/>
+    <cc:attribute name="required"/>
+</cc:interface>
+
+<!-- IMPLEMENTATION -->
+<cc:implementation>
+    <div style="display: none">
+        <p:calendar id="gregorian#{cc.attrs.id}"
+                    value="#{cc.attrs.value}" widgetVar="gregorian#{cc.attrs.id}"/>
+    </div>
+    <npsd:persianDatePicker id="#{cc.attrs.id}"
+                           styleClass="#{cc.attrs.styleClass} ui-inputfield ui-widget ui-state-default ui-corner-all"
+                           required="#{cc.attrs.required}"/>
+</cc:implementation>
+</html>

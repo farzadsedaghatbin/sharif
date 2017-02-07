@@ -88,4 +88,9 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
         update(null, file);
     }
 
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public File update(String triggeredBy, File entity) {
+        return super.update(triggeredBy, entity);
+    }
 }

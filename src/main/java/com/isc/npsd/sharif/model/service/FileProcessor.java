@@ -21,7 +21,6 @@ public class FileProcessor {
     @Inject
     private TrxService trxService;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void process() {
         List<File> unprocessedFiles = fileService.findUnprocessedFiles();
         unprocessedFiles.forEach(file -> fileService.persisTransactions(file));

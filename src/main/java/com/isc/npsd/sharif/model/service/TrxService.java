@@ -62,9 +62,4 @@ public class TrxService {
         return dbtrBIC;
     }
 
-
-    public void persistInRedis(TXRList.TXR transaction) {
-
-    }
-
 }

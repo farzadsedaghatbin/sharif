@@ -17,7 +17,7 @@ public class RedisUtil {
     static Jedis jedis;
 
     public static Pipeline getPipeline() {
-        return pool.getResource().pipelined();
+        return jedis.pipelined();
     }
 
     static {
@@ -29,8 +29,8 @@ public class RedisUtil {
 //                JsonNode rediscloudNode = root.getNode("rediscloud");
 //                JsonNode credentials = rediscloudNode.getNode(0).getNode("credentials");
 
-        pool = new JedisPool(new JedisPoolConfig(), "host", 12950,
-                Protocol.DEFAULT_TIMEOUT, "password");
+        pool = new JedisPool(new JedisPoolConfig(), "192.168.160.217", Protocol.DEFAULT_PORT,
+                600000);
         jedis = pool.getResource();
 //            }
 //        } catch (InvalidSyntaxException ex) {
@@ -42,7 +42,7 @@ public class RedisUtil {
         try {
 
 
-            pool.getResource().set(key, value);
+            jedis.set(key, value);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public class RedisUtil {
     public static TXRList.TXR getItem(String key) {
 
         try {
-            return new ObjectMapper().readValue(pool.getResource().get(key), TXRList.TXR.class);
+            return new ObjectMapper().readValue(jedis.get(key), TXRList.TXR.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -62,10 +62,10 @@ public class RedisUtil {
     public static TXRList.TXR getExpressionItem(String pattern) {
 
         try {
-            Set<String> sets = pool.getResource().keys(pattern);
+            Set<String> sets = jedis.keys(pattern);
             if (sets == null || sets.size() == 0)
                 return null;
-            return new ObjectMapper().readValue(pool.getResource().get(sets.iterator().next()), TXRList.TXR.class);
+            return new ObjectMapper().readValue(jedis.get(sets.iterator().next()), TXRList.TXR.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -75,7 +75,7 @@ public class RedisUtil {
     public static Set<TXRList.TXR> getExpressionItems(String pattern) {
 
         try {
-            Set<String> sets = pool.getResource().keys(pattern);
+            Set<String> sets = jedis.keys(pattern);
             Set<TXRList.TXR> txrs = new HashSet<>();
             for (String set : sets) {
                 txrs.add(new ObjectMapper().readValue(set, TXRList.TXR.class));
@@ -93,7 +93,6 @@ public class RedisUtil {
     }
 //    public static void main(String[] args) {
 ////        test();
-//        Jedis jedis = pool.getResource();
 //        Set<String> sets=jedis.keys("3*");
 //        for (String set : sets) {
 //            jedis.del(

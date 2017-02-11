@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -73,8 +74,6 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                 List<TXRList.TXR> transactions = txrList.getTXR();
                 Pipeline p = RedisUtil.getPipeline();
                 transactions.forEach(transaction -> {
-                    trxService.persistInRedis(transaction);
-
                     try {
                         p.set(transaction.getMndtReqId(), new ObjectMapper().writeValueAsString(transaction));
                     } catch (JsonProcessingException e) {

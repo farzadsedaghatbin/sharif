@@ -1,5 +1,7 @@
 package com.isc.npsd.sharif.model.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.isc.npsd.common.service.BaseServiceImpl;
 import com.isc.npsd.common.util.EncryptUtil;
 import com.isc.npsd.common.util.JAXBUtil;
@@ -8,7 +10,9 @@ import com.isc.npsd.sharif.model.entities.FileStatus;
 import com.isc.npsd.sharif.model.entities.FileType;
 import com.isc.npsd.sharif.model.entities.schemaobjects.trx.TXRList;
 import com.isc.npsd.sharif.model.repositories.FileRepository;
+import com.isc.npsd.sharif.util.RedisUtil;
 import org.xml.sax.SAXException;
+import redis.clients.jedis.Pipeline;
 
 import javax.ejb.*;
 import javax.inject.Inject;
@@ -67,10 +71,17 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
             try {
                 TXRList txrList = (TXRList) JAXBUtil.XmlToObject(xml, FileType.TRANSACTION.getXSDSchema(), FileType.TRANSACTION.getSchemaContext());
                 List<TXRList.TXR> transactions = txrList.getTXR();
+                Pipeline p = RedisUtil.getPipeline();
                 transactions.forEach(transaction -> {
                     trxService.persistInRedis(transaction);
-                    //TODO insert into redis
+
+                    try {
+                        p.set(transaction.getMndtReqId(), new ObjectMapper().writeValueAsString(transaction));
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 });
+                p.sync();
                 file.setFileStatus(FileStatus.ACCEPTED);
 
             } catch (JAXBException e) {

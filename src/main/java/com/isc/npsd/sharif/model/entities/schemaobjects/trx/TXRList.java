@@ -8,6 +8,10 @@
 
 package com.isc.npsd.sharif.model.entities.schemaobjects.trx;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -119,7 +123,21 @@ public class TXRList {
         "maxAmt"
     })
     public static class TXR {
-
+//        public static void main(String[] args) {
+//            TXR t = new TXR();
+//            t.setCBIC("MELI");
+//            t.setDBIC("MELAT");
+//            t.setMndtReqId("123456");
+//            ActiveCurrencyAndAmount activeCurrencyAndAmount=new ActiveCurrencyAndAmount();
+//            activeCurrencyAndAmount.setValue(new BigDecimal(12246));
+//            t.setMaxAmt(activeCurrencyAndAmount);
+//
+//            try {
+//                System.out.println(new ObjectMapper().writeValueAsString(t));
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//        }
         @XmlElement(name = "MndtReqId", required = true)
         protected String mndtReqId;
         @XmlElement(name = "CBIC", required = true)

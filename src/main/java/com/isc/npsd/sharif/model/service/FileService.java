@@ -80,7 +80,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                         e.printStackTrace();
                     }
                 });
-                p.exec();
+                p.sync();
                 file.setFileStatus(FileStatus.ACCEPTED);
 
             } catch (JAXBException e) {

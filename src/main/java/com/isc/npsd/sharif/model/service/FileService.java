@@ -75,7 +75,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                 Pipeline p = RedisUtil.getPipeline();
                 transactions.forEach(transaction -> {
                     try {
-                        p.set(transaction.getCBIC() + "," + transaction.getDBIC(), new ObjectMapper().writeValueAsString(transaction));
+                        p.set("cbic:" + transaction.getCBIC() + ",dbic:" + transaction.getDBIC(), new ObjectMapper().writeValueAsString(transaction));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }

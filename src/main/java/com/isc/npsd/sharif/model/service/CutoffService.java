@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,13 +40,10 @@ public class CutoffService {
                     bnp.setMainBic(bic1);
                     bnp.setOtherBic(bic2);
 
-                    List credit = new ArrayList();
-                    if (RedisUtil.getExpressionItems("*cbic:" + bic1 + "_dbic:" + bic2 + "*") != null) {
-                        credit.addAll(RedisUtil.getExpressionItems("*cbic:" + bic1 + "_dbic:" + bic2 + "*"));
+                    Set credit = RedisUtil.getExpressionItems("*cbic:" + bic1 + "_dbic:" + bic2);
+                    if (credit != null) {
+                            System.out.println(credit.size());
                     }
-
-                    if (credit.size() > 0)
-                        System.out.println(credit.size());
 
                     /*
                     List debit = new ArrayList();

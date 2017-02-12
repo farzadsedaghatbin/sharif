@@ -2,6 +2,7 @@ package com.isc.npsd.sharif.controller;
 
 import com.isc.npsd.common.controller.BaseForm;
 import com.isc.npsd.sharif.model.entities.File;
+import com.isc.npsd.sharif.model.service.CutoffService;
 import com.isc.npsd.sharif.model.service.FileProcessor;
 import com.isc.npsd.sharif.model.service.FileService;
 import com.isc.npsd.sharif.model.service.Generator;
@@ -24,6 +25,8 @@ public class TxController extends BaseForm<File, FileService> {
     private FileProcessor fileProcessor;
     @Inject
     private Generator generator;
+    @Inject
+    private CutoffService cutoffService;
 
     private File file;
     private int numberOfTx;
@@ -63,6 +66,10 @@ public class TxController extends BaseForm<File, FileService> {
 
     public void fileProcess() {
         fileProcessor.process();
+    }
+
+    public void cutoff() {
+        cutoffService.cutoff();
     }
 
     public int getNumberOfTx() {

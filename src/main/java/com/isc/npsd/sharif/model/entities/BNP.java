@@ -9,9 +9,19 @@ import java.math.BigInteger;
 /**
  * Created by A_Jankeh on 2/11/2017.
  */
+@NamedQueries({
+        @NamedQuery(
+                name = BNP.FIND_SUM_OF_BNP,
+                query = "select coalesce(sum(b.bnp),0) from BNP b where b.mainBic= :bic"
+        )
+})
+
+
 @Entity
 @Table(name = "tb_bnp")
 public class BNP implements BaseModel<Long> {
+
+    public static final String FIND_SUM_OF_BNP = "BNP.findSumOfBNP";
 
     private Long id;
     private String mainBic;

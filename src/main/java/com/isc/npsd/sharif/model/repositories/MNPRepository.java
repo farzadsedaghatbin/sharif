@@ -1,7 +1,7 @@
 package com.isc.npsd.sharif.model.repositories;
 
 import com.isc.npsd.common.data.BaseRDBMSRepositoryImpl;
-import com.isc.npsd.sharif.model.entities.schemaobjects.trx.MNP;
+import com.isc.npsd.sharif.model.entities.MNP;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

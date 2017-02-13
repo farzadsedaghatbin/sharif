@@ -1,5 +1,4 @@
-package com.isc.npsd.sharif.model.entities.schemaobjects.trx;
-
+package com.isc.npsd.sharif.model.entities;
 import com.isc.npsd.common.model.BaseModel;
 
 import javax.persistence.*;

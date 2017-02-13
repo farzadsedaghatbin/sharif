@@ -29,7 +29,9 @@ public class RedisUtil {
 //                JsonNode rediscloudNode = root.getNode("rediscloud");
 //                JsonNode credentials = rediscloudNode.getNode(0).getNode("credentials");
 
-        pool = new JedisPool(new JedisPoolConfig(), "192.168.160.217", Protocol.DEFAULT_PORT, 600000);
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxActive(20);
+        pool = new JedisPool(jedisPoolConfig, "192.168.160.217", Protocol.DEFAULT_PORT, 600000);
         jedis = pool.getResource();
 //            }
 //        } catch (InvalidSyntaxException ex) {

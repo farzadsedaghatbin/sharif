@@ -1,15 +1,19 @@
 package com.isc.npsd.sharif.model.service;
 
 import com.isc.npsd.sharif.model.entities.BNP;
-import com.isc.npsd.sharif.model.entities.schemaobjects.trx.MNP;
+import com.isc.npsd.sharif.model.entities.MNP;
+import com.isc.npsd.sharif.model.entities.STMT;
 import com.isc.npsd.sharif.model.entities.schemaobjects.trx.TXRList;
 import com.isc.npsd.sharif.model.repositories.BNPRepository;
 import com.isc.npsd.sharif.model.repositories.MNPRepository;
+import com.isc.npsd.sharif.model.repositories.STMTRepository;
 import com.isc.npsd.sharif.util.ParticipantUtil;
 import com.isc.npsd.sharif.util.RedisUtil;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -25,17 +29,43 @@ import java.util.Set;
 public class CutoffService {
 
     @Inject
+    private STMTRepository stmtRepository;
+    @Inject
+    private STMTService stmtService;
+    @Inject
     private BNPRepository bnpRepository;
     @Inject
     private MNPRepository mnpRepository;
 
+
     public void cutoff() {
+        stmtProcess();
         bnpProcess();
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void stmtProcess() {
+        List<String> bics = ParticipantUtil.getInstance().getBics();
+        bics.forEach(creditorBIC -> {
+            Set<TXRList.TXR> transactions = RedisUtil.getExpressionItems("*_" + creditorBIC + "_*");
+            if (transactions != null) {
+
+                for (TXRList.TXR transaction : transactions) {
+                    STMT stmt = new STMT();
+                    stmt.setMrn(transaction.getMndtReqId());
+                    stmt.setCbic(transaction.getCBIC());
+                    stmt.setDbic(transaction.getDBIC());
+                    stmt.setAmount(transaction.getMaxAmt().getValue());
+                    stmtRepository.add(stmt);
+                }
+            }
+        });
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void bnpProcess() {
         List<BNP> settles = new ArrayList<>();
-        final BigDecimal[] mnp = {new BigDecimal(0)};
+
         List<String> bics = ParticipantUtil.getInstance().getBics();
         bics.forEach(bic1 -> {
             bics.forEach(bic2 -> {
@@ -44,47 +74,29 @@ public class CutoffService {
                     bnp.setMainBic(bic1);
                     bnp.setOtherBic(bic2);
 
-                    Set<TXRList.TXR> credits = RedisUtil.getExpressionItems("*cbic:" + bic1 + "_dbic:" + bic2);
-                    Set<TXRList.TXR> debits = RedisUtil.getExpressionItems("*cbic:" + bic2 + "_dbic:" + bic1);
+                    List<Object[]> credit = stmtService.findSumAndCount(bic1, bic2);
+                    List<Object[]> debit = stmtService.findSumAndCount(bic2, bic1);
 
-                    BigDecimal creditSum = new BigDecimal(0);
-                    BigInteger creditSize = new BigInteger("0");
-                    if (credits != null) {
-                        credits.forEach(credit -> {
-                            creditSum.add(credit.getMaxAmt().getValue());
-                        });
-                        creditSize.add(BigInteger.valueOf(credits.size()));
-                    }
-
-                    BigDecimal debitSum = new BigDecimal(0);
-                    BigInteger debitSize = new BigInteger("0");
-                    if (debits != null) {
-                        debits.forEach(debit -> {
-                            debitSum.add(debit.getMaxAmt().getValue());
-                        });
-                        debitSize.add(BigInteger.valueOf(debits.size()));
-                    }
-
-                    bnp.setInflowSum(creditSum);
-                    bnp.setInflowCount(creditSize);
-                    bnp.setOutflowSum(debitSum);
-                    bnp.setOutflowCount(debitSize);
+                    bnp.setInflowSum((BigDecimal) (credit.get(0))[0]);
+                    bnp.setInflowCount(BigInteger.valueOf((Long) (credit.get(0))[1]));
+                    bnp.setOutflowSum((BigDecimal) (debit.get(0))[0]);
+                    bnp.setOutflowCount(BigInteger.valueOf((Long) (debit.get(0))[1]));
                     BigDecimal bnpVal = bnp.getInflowSum().subtract(bnp.getOutflowSum());
                     bnp.setBnp(bnpVal);
                     settles.add(bnp);
                     bnpRepository.add(bnp);
-                    mnp[0] = mnp[0].add(bnpVal);
-
                 }
             });
-            createMnpRecord(bic1, mnp);
+            createMnpRecord(bic1, settles);
         });
     }
 
-    private void createMnpRecord(String bic, BigDecimal[] mnp) {
+    private void createMnpRecord(String bic, List<BNP> bnps) {
         MNP entity = new MNP();
-        entity.setAmount(mnp[0]);
+        final BigDecimal mnp = new BigDecimal(0);
+        bnps.forEach(bnp -> mnp.add(bnp.getBnp()));
         entity.setBic(bic);
         mnpRepository.add(entity);
     }
+
 }

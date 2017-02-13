@@ -105,7 +105,7 @@ public class CutoffService {
     */
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void createMnpRecord() {
+    private void createMnpRecords() {
         List<String> bics = ParticipantUtil.getInstance().getBics();
         bics.forEach(bic -> {
             List<Object[]> mnpValue = bnpService.findSumOfBNP(bic);

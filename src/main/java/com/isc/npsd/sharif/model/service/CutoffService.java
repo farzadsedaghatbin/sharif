@@ -43,7 +43,6 @@ public class CutoffService {
     public void cutoff() {
         stmtProcess();
         bnpProcess();
-//        createMnpRecords();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -67,53 +66,39 @@ public class CutoffService {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void bnpProcess() {
-//        List<BNP> settles = new ArrayList<>();
-
         List<String> bics = ParticipantUtil.getInstance().getBics();
         bics.forEach(bic1 -> {
+            List<BNP> settles = new ArrayList<>();
+            final BigDecimal[] mnp = {new BigDecimal(0)};
             bics.forEach(bic2 -> {
                 if (!bic1.equals(bic2)) {
                     BNP bnp = new BNP();
                     bnp.setMainBic(bic1);
                     bnp.setOtherBic(bic2);
-
                     List<Object[]> credit = stmtService.findSumAndCount(bic1, bic2);
                     List<Object[]> debit = stmtService.findSumAndCount(bic2, bic1);
-
                     bnp.setInflowSum((BigDecimal) ((Object[]) credit.get(0))[0]);
                     bnp.setInflowCount(BigInteger.valueOf((Long) ((Object[]) credit.get(0))[1]));
                     bnp.setOutflowSum((BigDecimal) ((Object[]) debit.get(0))[0]);
                     bnp.setOutflowCount(BigInteger.valueOf((Long) ((Object[]) debit.get(0))[1]));
                     BigDecimal bnpVal = bnp.getInflowSum().subtract(bnp.getOutflowSum());
                     bnp.setBnp(bnpVal);
-//                    settles.add(bnp);
+                    settles.add(bnp);
                     bnpRepository.add(bnp);
+                    mnp[0] = mnp[0].add(bnpVal);
                 }
             });
-//            createMnpRecord(bic1, settles);
+            createMnpRecord(bic1, mnp);
         });
     }
 
-    /*
-    private void createMnpRecords(String bic, List<BNP> bnps) {
+    private void createMnpRecord(String bic, BigDecimal[] mnp) {
         MNP entity = new MNP();
-        final BigDecimal mnp = new BigDecimal(0);
-        bnps.forEach(bnp -> mnp.add(bnp.getBnp()));
+        entity.setAmount(mnp[0]);
         entity.setBic(bic);
         mnpRepository.add(entity);
     }
-    */
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void createMnpRecords() {
-        List<String> bics = ParticipantUtil.getInstance().getBics();
-        bics.forEach(bic -> {
-            List<Object[]> mnpValue = bnpService.findSumOfBNP(bic);
-            MNP entity = new MNP();
-            entity.setBic(bic);
-            entity.setAmount((BigDecimal) ((Object[]) mnpValue.get(0))[0]);
-            mnpRepository.add(entity);
-        });
-    }
+
 
 }

@@ -8,7 +8,6 @@ import com.isc.npsd.sharif.model.repositories.BNPRepository;
 import com.isc.npsd.sharif.model.repositories.MNPRepository;
 import com.isc.npsd.sharif.model.repositories.STMTRepository;
 import com.isc.npsd.sharif.util.ParticipantUtil;
-import com.isc.npsd.sharif.util.RedisUtil;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;

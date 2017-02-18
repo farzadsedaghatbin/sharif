@@ -340,7 +340,7 @@
         <dependency>
             <groupId>com.isc.npsd.common</groupId>
             <artifactId>Common</artifactId>
-            <version>1.12.0</version>
+            <version>1.14.0</version>
         </dependency>
 
         <dependency>

@@ -1,5 +1,8 @@
 package com.isc.npsd.sharif.model.service;
 
+import com.isc.npsd.common.util.redis.CallbackMethod;
+import com.isc.npsd.common.util.redis.RedisUtil;
+import com.isc.npsd.sharif.adapter.SharedObjectsContainer;
 import com.isc.npsd.sharif.model.entities.BNP;
 import com.isc.npsd.sharif.model.entities.MNP;
 import com.isc.npsd.sharif.model.entities.STMT;
@@ -8,14 +11,18 @@ import com.isc.npsd.sharif.model.repositories.BNPRepository;
 import com.isc.npsd.sharif.model.repositories.MNPRepository;
 import com.isc.npsd.sharif.model.repositories.STMTRepository;
 import com.isc.npsd.sharif.util.ParticipantUtil;
+import redis.clients.jedis.Jedis;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -40,27 +47,44 @@ public class CutoffService {
 
 
     public void cutoff() {
+        LocalTime startTime = LocalTime.now();
         stmtProcess();
         bnpProcess();
+        LocalTime endTime = LocalTime.now();
+        Duration duration = Duration.between(startTime, endTime);
+        System.out.println("Duration: " + duration);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void stmtProcess() {
         List<String> bics = ParticipantUtil.getInstance().getBics();
-        bics.forEach(creditorBIC -> {
-            Set<TXRList.TXR> transactions = RedisUtil.getExpressionItems("*_" + creditorBIC + "_*");
-            if (transactions != null) {
+        RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
+        redisUtil.execute(new CallbackMethod() {
+            @Override
+            public void onExecution(Jedis jedis) {
+                bics.forEach(creditorBIC -> {
+                    Set<TXRList.TXR> transactions = null;
+                    try {
+                        transactions = redisUtil.getExpressionItemsFromSet(jedis, TXRList.TXR.class, "*_" + creditorBIC + "_*");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (transactions != null) {
 
-                for (TXRList.TXR transaction : transactions) {
-                    STMT stmt = new STMT();
-                    stmt.setMrn(transaction.getMndtReqId());
-                    stmt.setCbic(transaction.getCBIC());
-                    stmt.setDbic(transaction.getDBIC());
-                    stmt.setAmount(transaction.getMaxAmt().getValue());
-                    stmtRepository.add(stmt);
-                }
+                        for (TXRList.TXR transaction : transactions) {
+                            STMT stmt = new STMT();
+                            stmt.setMrn(transaction.getMndtReqId());
+                            stmt.setCbic(transaction.getCBIC());
+                            stmt.setDbic(transaction.getDBIC());
+                            stmt.setAmount(transaction.getMaxAmt().getValue());
+                            stmtRepository.add(stmt);
+                        }
+                    }
+                });
             }
         });
+
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -8,6 +8,7 @@ import com.isc.npsd.common.util.JAXBUtil;
 import com.isc.npsd.common.util.JsonUtil;
 import com.isc.npsd.common.util.redis.CallbackPipelineMethod;
 import com.isc.npsd.common.util.redis.RedisUtil;
+import com.isc.npsd.sharif.adapter.SharedObjectsContainer;
 import com.isc.npsd.sharif.model.entities.File;
 import com.isc.npsd.sharif.model.entities.FileStatus;
 import com.isc.npsd.sharif.model.entities.FileType;
@@ -74,7 +75,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
             try {
                 TXRList txrList = (TXRList) JAXBUtil.XmlToObject(xml, FileType.TRANSACTION.getXSDSchema(), FileType.TRANSACTION.getSchemaContext());
                 List<TXRList.TXR> transactions = txrList.getTXR();
-                RedisUtil redisUtil = RedisUtil.getInstance();
+                RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
                 redisUtil.executePipeline(new CallbackPipelineMethod() {
                     @Override
                     public void onExecution(Pipeline pipeline) {

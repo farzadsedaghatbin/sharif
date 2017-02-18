@@ -26,7 +26,7 @@
       <!-- The datasource is deployed as WEB-INF/Sharif-ds.xml, you
          can find it in the source at src/main/webapp/WEB-INF/Sharif-ds.xml -->
       <jta-data-source>java:jboss/datasources/SharifDS</jta-data-source>
-      <jar-file>lib/Common-1.12.0.jar</jar-file>
+      <jar-file>lib/Common-1.14.0.jar</jar-file>
       <properties>
          <!-- Properties for Hibernate -->
          <property name="hibernate.hbm2ddl.auto" value="update" />

@@ -10,10 +10,7 @@ import com.isc.npsd.sharif.model.entities.schemaobjects.trx.TXRList;
 import com.isc.npsd.sharif.util.ParticipantUtil;
 import redis.clients.jedis.Jedis;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -52,32 +49,7 @@ public class CutoffService {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void stmtProcess() {
         List<String> bics = ParticipantUtil.getInstance().getBics();
-        RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
-        bics.forEach(creditorBIC -> {
-            redisUtil.execute(new CallbackMethod() {
-                @Override
-                public void onExecution(Jedis jedis) {
-                        Set<TXRList.TXR> transactions = null;
-                        try {
-                            transactions = redisUtil.getExpressionItemsFromSet(jedis, TXRList.TXR.class, "*_" + creditorBIC + "_*");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (transactions != null) {
-
-                            for (TXRList.TXR transaction : transactions) {
-                                STMT stmt = new STMT();
-                                stmt.setMrn(transaction.getMndtReqId());
-                                stmt.setCbic(transaction.getCBIC());
-                                stmt.setDbic(transaction.getDBIC());
-                                stmt.setAmount(transaction.getMaxAmt().getValue());
-                                stmtService.add(null, stmt);
-                            }
-                        }
-                }
-            });
-        });
-
+        bics.forEach(this::saveTransactions);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -113,6 +85,33 @@ public class CutoffService {
         entity.setAmount(mnp[0]);
         entity.setBic(bic);
         mnpService.add(null, entity);
+    }
+
+    @Asynchronous
+    private void saveTransactions(String creditorBIC) {
+        RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
+        redisUtil.execute(new CallbackMethod() {
+            @Override
+            public void onExecution(Jedis jedis) {
+                Set<TXRList.TXR> transactions = null;
+                try {
+                    transactions = redisUtil.getExpressionItemsFromSet(jedis, TXRList.TXR.class, "*_" + creditorBIC + "_*");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (transactions != null) {
+
+                    for (TXRList.TXR transaction : transactions) {
+                        STMT stmt = new STMT();
+                        stmt.setMrn(transaction.getMndtReqId());
+                        stmt.setCbic(transaction.getCBIC());
+                        stmt.setDbic(transaction.getDBIC());
+                        stmt.setAmount(transaction.getMaxAmt().getValue());
+                        stmtService.add(null, stmt);
+                    }
+                }
+            }
+        });
     }
 
 

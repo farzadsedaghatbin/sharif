@@ -11,6 +11,8 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,7 @@ public class Generator {
     private int totalNumberOfRecords;
 
     public void prepare(int totalNumberOfRecords) {
+        LocalTime startTime = LocalTime.now();
         this.totalNumberOfRecords = totalNumberOfRecords;
         List<String> bics = ParticipantUtil.getInstance().getBics();
         Map<String, List<File>> fileMap = new ConcurrentHashMap<>();
@@ -43,6 +46,10 @@ public class Generator {
             fileMap.put(bic, generateFiles());
         });
         fileService.saveFileMap(fileMap);
+        LocalTime endTime = LocalTime.now();
+        Duration duration = Duration.between(startTime, endTime);
+        System.out.println("File Generation Duration : " + duration);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
     }
 
     private List<File> generateFiles() {

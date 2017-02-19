@@ -45,7 +45,7 @@ public class CutoffService {
         bnpProcess();
         LocalTime endTime = LocalTime.now();
         Duration duration = Duration.between(startTime, endTime);
-        System.out.println("Duration: " + duration);
+        System.out.println("Cutoff Duration : " + duration);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
     }
 

@@ -85,7 +85,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                             }
                         });
                     }
-                }, false);
+                }, true);
 
                 file.setFileStatus(FileStatus.ACCEPTED);
 

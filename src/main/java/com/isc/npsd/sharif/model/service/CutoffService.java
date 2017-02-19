@@ -53,29 +53,29 @@ public class CutoffService {
     private void stmtProcess() {
         List<String> bics = ParticipantUtil.getInstance().getBics();
         RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
-        redisUtil.execute(new CallbackMethod() {
-            @Override
-            public void onExecution(Jedis jedis) {
-                bics.forEach(creditorBIC -> {
-                    Set<TXRList.TXR> transactions = null;
-                    try {
-                        transactions = redisUtil.getExpressionItemsFromSet(jedis, TXRList.TXR.class, "*_" + creditorBIC + "_*");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (transactions != null) {
-
-                        for (TXRList.TXR transaction : transactions) {
-                            STMT stmt = new STMT();
-                            stmt.setMrn(transaction.getMndtReqId());
-                            stmt.setCbic(transaction.getCBIC());
-                            stmt.setDbic(transaction.getDBIC());
-                            stmt.setAmount(transaction.getMaxAmt().getValue());
-                            stmtService.add(null, stmt);
+        bics.forEach(creditorBIC -> {
+            redisUtil.execute(new CallbackMethod() {
+                @Override
+                public void onExecution(Jedis jedis) {
+                        Set<TXRList.TXR> transactions = null;
+                        try {
+                            transactions = redisUtil.getExpressionItemsFromSet(jedis, TXRList.TXR.class, "*_" + creditorBIC + "_*");
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                    }
-                });
-            }
+                        if (transactions != null) {
+
+                            for (TXRList.TXR transaction : transactions) {
+                                STMT stmt = new STMT();
+                                stmt.setMrn(transaction.getMndtReqId());
+                                stmt.setCbic(transaction.getCBIC());
+                                stmt.setDbic(transaction.getDBIC());
+                                stmt.setAmount(transaction.getMaxAmt().getValue());
+                                stmtService.add(null, stmt);
+                            }
+                        }
+                }
+            });
         });
 
     }

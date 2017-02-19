@@ -26,7 +26,7 @@
     <datasource jndi-name="java:jboss/datasources/SharifDS"
         pool-name="Sharif" enabled="true"
         use-java-context="true">
-        <connection-url>jdbc:oracle:thin:@192.168.163.9:1521:mms</connection-url>
+        <connection-url>jdbc:oracle:thin:@192.168.161.129:1521:mms</connection-url>
         <driver>oracle</driver>
         <security>
             <user-name>sharif</user-name>

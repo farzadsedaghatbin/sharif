@@ -1,7 +1,5 @@
 package com.isc.npsd.sharif.model.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.isc.npsd.common.service.BaseServiceImpl;
 import com.isc.npsd.common.util.EncryptUtil;
 import com.isc.npsd.common.util.JAXBUtil;
@@ -89,15 +87,6 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                     }
                 }, false);
 
-//                Pipeline p = RedisUtil.getPipeline();
-//                transactions.forEach(transaction -> {
-//                    try {
-//                        p.set(transaction.getMndtReqId() + "_" + transaction.getCBIC() + "_" + transaction.getDBIC(), new ObjectMapper().writeValueAsString(transaction));
-//                    } catch (JsonProcessingException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//                p.sync();
                 file.setFileStatus(FileStatus.ACCEPTED);
 
             } catch (JAXBException e) {

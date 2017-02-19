@@ -7,9 +7,6 @@ import com.isc.npsd.sharif.model.entities.BNP;
 import com.isc.npsd.sharif.model.entities.MNP;
 import com.isc.npsd.sharif.model.entities.STMT;
 import com.isc.npsd.sharif.model.entities.schemaobjects.trx.TXRList;
-import com.isc.npsd.sharif.model.repositories.BNPRepository;
-import com.isc.npsd.sharif.model.repositories.MNPRepository;
-import com.isc.npsd.sharif.model.repositories.STMTRepository;
 import com.isc.npsd.sharif.util.ParticipantUtil;
 import redis.clients.jedis.Jedis;
 
@@ -35,15 +32,11 @@ import java.util.Set;
 public class CutoffService {
 
     @Inject
-    private STMTRepository stmtRepository;
-    @Inject
     private STMTService stmtService;
-    @Inject
-    private BNPRepository bnpRepository;
     @Inject
     private BNPService bnpService;
     @Inject
-    private MNPRepository mnpRepository;
+    private MNPService mnpService;
 
 
     public void cutoff() {
@@ -78,7 +71,7 @@ public class CutoffService {
                             stmt.setCbic(transaction.getCBIC());
                             stmt.setDbic(transaction.getDBIC());
                             stmt.setAmount(transaction.getMaxAmt().getValue());
-                            stmtRepository.add(stmt);
+                            stmtService.add(null, stmt);
                         }
                     }
                 });
@@ -107,7 +100,7 @@ public class CutoffService {
                     BigDecimal bnpVal = bnp.getInflowSum().subtract(bnp.getOutflowSum());
                     bnp.setBnp(bnpVal);
                     settles.add(bnp);
-                    bnpRepository.add(bnp);
+                    bnpService.add(null, bnp);
                     mnp[0] = mnp[0].add(bnpVal);
                 }
             });
@@ -119,9 +112,8 @@ public class CutoffService {
         MNP entity = new MNP();
         entity.setAmount(mnp[0]);
         entity.setBic(bic);
-        mnpRepository.add(entity);
+        mnpService.add(null, entity);
     }
-
 
 
 }

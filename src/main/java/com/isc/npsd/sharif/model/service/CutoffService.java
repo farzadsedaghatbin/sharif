@@ -4,8 +4,6 @@ import com.isc.npsd.sharif.util.ParticipantUtil;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -42,7 +40,6 @@ public class CutoffService {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void stmtProcess() {
         List<Future<String>> stmtFuture = new ArrayList<>();
         List<String> bics = ParticipantUtil.getInstance().getBics();
@@ -50,7 +47,6 @@ public class CutoffService {
         waitForFutures(stmtFuture);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void bnpProcess() {
         List<Future<String>> bnpFuture = new ArrayList<>();
         List<String> bics = ParticipantUtil.getInstance().getBics();
@@ -67,6 +63,5 @@ public class CutoffService {
             }
         });
     }
-
 
 }

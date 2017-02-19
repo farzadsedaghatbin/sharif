@@ -9,10 +9,7 @@ import com.isc.npsd.sharif.model.entities.schemaobjects.trx.TXRList;
 import com.isc.npsd.sharif.model.repositories.STMTRepository;
 import redis.clients.jedis.Jedis;
 
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
@@ -48,6 +45,7 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
     }
 
     @Asynchronous
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Future<String> saveTransactions(String creditorBIC) {
         RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
         redisUtil.execute(new CallbackMethod() {

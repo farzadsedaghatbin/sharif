@@ -6,10 +6,7 @@ import com.isc.npsd.sharif.model.entities.MNP;
 import com.isc.npsd.sharif.model.repositories.MNPRepository;
 import com.isc.npsd.sharif.util.ParticipantUtil;
 
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -45,7 +42,8 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
     }
 
     @Asynchronous
-    public Future<String> createBNPAndMNP(String bic1){
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public Future<String> createBNPAndMNP(String bic1) {
         List<String> bics = ParticipantUtil.getInstance().getBics();
         List<BNP> settles = new ArrayList<>();
         final BigDecimal[] mnp = {new BigDecimal(0)};

@@ -44,8 +44,8 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
     @Asynchronous
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Future<String> createBNPAndMNP(String bic1) {
+        System.out.println(">>>>>>>>>>>>>> create BNP" + bic1);
         List<String> bics = ParticipantUtil.getInstance().getBics();
-        List<BNP> settles = new ArrayList<>();
         final BigDecimal[] mnp = {new BigDecimal(0)};
         bics.forEach(bic2 -> {
             if (!bic1.equals(bic2)) {
@@ -60,12 +60,12 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
                 bnp.setOutflowCount(BigInteger.valueOf((Long) ((Object[]) debit.get(0))[1]));
                 BigDecimal bnpVal = bnp.getInflowSum().subtract(bnp.getOutflowSum());
                 bnp.setBnp(bnpVal);
-                settles.add(bnp);
                 bnpService.add(null, bnp);
                 mnp[0] = mnp[0].add(bnpVal);
             }
         });
         createMnpRecord(bic1, mnp);
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<  DONE  !!!!!" + bic1);
         return new AsyncResult<>("");
     }
 

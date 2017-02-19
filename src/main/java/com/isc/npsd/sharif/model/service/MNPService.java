@@ -65,7 +65,7 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
             }
         });
         createMnpRecord(bic1, mnp);
-        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<  DONE  !!!!!" + bic1);
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<  End Of BNP  :" + bic1);
         return new AsyncResult<>("");
     }
 

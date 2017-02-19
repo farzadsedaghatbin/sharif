@@ -47,6 +47,7 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
     @Asynchronous
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Future<String> saveTransactions(String creditorBIC) {
+        System.out.println(">>>>>>>>>>>>>> create STMT" + creditorBIC);
         RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
         redisUtil.execute(new CallbackMethod() {
             @Override
@@ -70,6 +71,7 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
                 }
             }
         });
+        System.out.println("<<<<<<<<<<<<<<<<<< End Of STMT :" + creditorBIC);
         return new AsyncResult<>("");
     }
 }

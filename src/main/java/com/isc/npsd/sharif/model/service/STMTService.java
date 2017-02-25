@@ -72,8 +72,8 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
                 }
             }
         });
-        System.out.println("<<<<<<<<<<<<<<<<<< End Of STMT : " + creditorBIC + "  >>>> SIZE : " + stmtList.size());
         addList(stmtList);
+        System.out.println("<<<<<<<<<<<<<<<<<< End Of STMT : " + creditorBIC + "  >>>> SIZE : " + stmtList.size());
         return new AsyncResult<>("");
     }
 

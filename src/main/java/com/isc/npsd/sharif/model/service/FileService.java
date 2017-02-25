@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 /**
@@ -64,7 +65,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
     }
 
     @Asynchronous
-    public void persisTransactions(File file) {
+    public Future<String> persisTransactions(File file) {
         byte[] decryptedContent = EncryptUtil.decryptAES(file.getContent());
         if (decryptedContent == null || decryptedContent.length == 0)
             file.setFileStatus(FileStatus.REJECTED);
@@ -73,10 +74,13 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
             try {
                 TXRList txrList = (TXRList) JAXBUtil.XmlToObject(xml, FileType.TRANSACTION.getXSDSchema(), FileType.TRANSACTION.getSchemaContext());
                 List<TXRList.TXR> transactions = txrList.getTXR();
+                System.out.println(">>>>>>>>>>>>> FILE Process : SIZE : " + transactions.size());
                 RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
+                final Pipeline[] lpipeline = {null};
                 redisUtil.executePipeline(new CallbackPipelineMethod() {
                     @Override
                     public void onExecution(Pipeline pipeline) {
+                        lpipeline[0] = pipeline;
                         transactions.forEach(transaction -> {
                             try {
                                 redisUtil.addItemToSet(pipeline, transaction.getMndtReqId() + "_" + transaction.getCBIC() + "_" + transaction.getDBIC(), JsonUtil.getJsonString(transaction));
@@ -86,6 +90,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
                         });
                     }
                 }, true);
+
 
                 file.setFileStatus(FileStatus.ACCEPTED);
 
@@ -102,6 +107,7 @@ public class FileService extends BaseServiceImpl<File, FileRepository> {
         }
 
         update(null, file);
+        return new AsyncResult<>("");
     }
 
     @Override

@@ -15,7 +15,8 @@ public class MNP implements BaseModel<Long> {
     private BigDecimal amount;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sharif_seq")
+    @SequenceGenerator(name = "sharif_seq", sequenceName = "SHARIF_SEQUENCE", allocationSize = 10000)
     @Column(name = "id")
     public Long getId() {
         return id;

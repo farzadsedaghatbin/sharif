@@ -41,7 +41,7 @@ public class Generator {
         this.totalNumberOfRecords = totalNumberOfRecords;
         List<String> bics = ParticipantUtil.getInstance().getBics();
         Map<String, List<File>> fileMap = new ConcurrentHashMap<>();
-        bics.parallelStream().forEach(bic -> {
+        bics.stream().forEach(bic -> {
             creditorBIC = bic;
             fileMap.put(bic, generateFiles());
         });

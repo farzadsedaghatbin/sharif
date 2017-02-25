@@ -32,11 +32,20 @@ public class CutoffService {
     public void cutoff() {
         LocalTime startTime = LocalTime.now();
         stmtProcess();
+        LocalTime endSTMP = LocalTime.now();
+        Duration duration = Duration.between(startTime, endSTMP);
+        System.out.println("STMT Duration : " + duration);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
+        LocalTime startBNP = LocalTime.now();
         bnpProcess();
         LocalTime endTime = LocalTime.now();
-        Duration duration = Duration.between(startTime, endTime);
-        System.out.println("Cutoff Duration : " + duration);
+        duration = Duration.between(startBNP, endTime);
+        System.out.println("BNP Duration : " + duration);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>");
+
+        Duration toatlDuration = Duration.between(startTime, endTime);
+        System.out.println("Cutoff Duration : " + toatlDuration);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 
     private void stmtProcess() {

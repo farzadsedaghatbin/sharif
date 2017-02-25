@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -42,10 +43,10 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
     }
 
     @Asynchronous
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Future<String> createBNPAndMNP(String bic1) {
-        System.out.println(">>>>>>>>>>>>>> create BNP" + bic1);
+        System.out.println(">>>>>>>>>>>>>> create BNP : " + bic1);
         List<String> bics = ParticipantUtil.getInstance().getBics();
+        List<BNP> bnpList = Collections.synchronizedList(new ArrayList<>());
         final BigDecimal[] mnp = {new BigDecimal(0)};
         bics.forEach(bic2 -> {
             if (!bic1.equals(bic2)) {
@@ -60,19 +61,23 @@ public class MNPService extends BaseServiceImpl<MNP, MNPRepository> {
                 bnp.setOutflowCount(BigInteger.valueOf((Long) ((Object[]) debit.get(0))[1]));
                 BigDecimal bnpVal = bnp.getInflowSum().subtract(bnp.getOutflowSum());
                 bnp.setBnp(bnpVal);
-                bnpService.add(null, bnp);
+                bnpList.add(bnp);
                 mnp[0] = mnp[0].add(bnpVal);
             }
         });
-        createMnpRecord(bic1, mnp);
-        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<  End Of BNP  :" + bic1);
+        createMnpAndBNPRecord(bic1, mnp[0], bnpList);
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<  End Of BNP  : " + bic1 + ">>>>> SIZE : " + bnpList.size());
         return new AsyncResult<>("");
     }
 
-    private void createMnpRecord(String bic, BigDecimal[] mnp) {
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void createMnpAndBNPRecord(String bic, BigDecimal mnp, List<BNP> bnpList) {
         MNP entity = new MNP();
-        entity.setAmount(mnp[0]);
+        entity.setAmount(mnp);
         entity.setBic(bic);
         add(null, entity);
+        for (BNP bnp : bnpList) {
+            bnpService.add(null, bnp);
+        }
     }
 }

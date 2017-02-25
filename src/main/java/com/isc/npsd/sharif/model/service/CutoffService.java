@@ -32,7 +32,6 @@ public class CutoffService {
     public void cutoff() {
         LocalTime startTime = LocalTime.now();
         stmtProcess();
-
         bnpProcess();
         LocalTime endTime = LocalTime.now();
         Duration duration = Duration.between(startTime, endTime);
@@ -43,14 +42,14 @@ public class CutoffService {
     private void stmtProcess() {
         List<Future<String>> stmtFuture = new ArrayList<>();
         List<String> bics = ParticipantUtil.getInstance().getBics();
-        bics.forEach(creditorBIC -> stmtFuture.add(stmtService.saveTransactions(creditorBIC)));
+        bics.stream().forEach(creditorBIC -> stmtFuture.add(stmtService.saveTransactions(creditorBIC)));
         waitForFutures(stmtFuture);
     }
 
     private void bnpProcess() {
         List<Future<String>> bnpFuture = new ArrayList<>();
         List<String> bics = ParticipantUtil.getInstance().getBics();
-        bics.forEach(bic1 -> bnpFuture.add(mnpService.createBNPAndMNP(bic1)));
+        bics.stream().forEach(bic1 -> bnpFuture.add(mnpService.createBNPAndMNP(bic1)));
         waitForFutures(bnpFuture);
     }
 

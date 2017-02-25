@@ -12,6 +12,8 @@ import redis.clients.jedis.Jedis;
 import javax.ejb.*;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -45,9 +47,9 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
     }
 
     @Asynchronous
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Future<String> saveTransactions(String creditorBIC) {
-        System.out.println(">>>>>>>>>>>>>> create STMT" + creditorBIC);
+        System.out.println(">>>>>>>>>>>>>> create STMT : " + creditorBIC);
+        List<STMT> stmtList = Collections.synchronizedList(new ArrayList<>());
         RedisUtil redisUtil = SharedObjectsContainer.redisUtil;
         redisUtil.execute(new CallbackMethod() {
             @Override
@@ -59,19 +61,26 @@ public class STMTService extends BaseServiceImpl<STMT, STMTRepository> {
                     e.printStackTrace();
                 }
                 if (transactions != null) {
-
-                    for (TXRList.TXR transaction : transactions) {
+                    transactions.parallelStream().forEach(transaction -> {
                         STMT stmt = new STMT();
                         stmt.setMrn(transaction.getMndtReqId());
                         stmt.setCbic(transaction.getCBIC());
                         stmt.setDbic(transaction.getDBIC());
                         stmt.setAmount(transaction.getMaxAmt().getValue());
-                        add(null, stmt);
-                    }
+                        stmtList.add(stmt);
+                    });
                 }
             }
         });
-        System.out.println("<<<<<<<<<<<<<<<<<< End Of STMT :" + creditorBIC);
+        System.out.println("<<<<<<<<<<<<<<<<<< End Of STMT : " + creditorBIC + "  >>>> SIZE : " + stmtList.size());
+        addList(stmtList);
         return new AsyncResult<>("");
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void addList(List<STMT> stmtList) {
+        for (STMT stmt : stmtList) {
+            add(null, stmt);
+        }
     }
 }
